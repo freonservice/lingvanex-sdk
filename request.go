@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -23,7 +24,8 @@ func (c *client) GetLanguages(ctx context.Context, code string) ([]Language, err
 		params.Add("code", code)
 	}
 
-	req, err := c.getRequest(ctx, c.languagesURL, params)
+	reqURL := fmt.Sprintf("%s?%s", c.languagesURL, params.Encode())
+	req, err := c.getRequest(ctx, reqURL)
 	if err != nil {
 		return nil, err
 	}
@@ -83,8 +85,7 @@ func (c *client) Translate(ctx context.Context, q, source, target string) (*Tran
 	return &resp, nil
 }
 
-func (c *client) getRequest(ctx context.Context, reqURL string, data url.Values) (*http.Request, error) {
-	reqURL = reqURL + "?" + data.Encode()
+func (c *client) getRequest(ctx context.Context, reqURL string) (*http.Request, error) {
 	r, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, err
