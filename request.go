@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/pkg/errors"
@@ -52,6 +51,7 @@ func (c *client) Translate(ctx context.Context, q, source, target string) (*Tran
 		Data:            q,
 		From:            source,
 		To:              target,
+		Platform:        platform,
 		Transliteration: c.transliteration,
 	}
 
@@ -84,7 +84,8 @@ func (c *client) Translate(ctx context.Context, q, source, target string) (*Tran
 }
 
 func (c *client) getRequest(ctx context.Context, reqURL string, data url.Values) (*http.Request, error) {
-	r, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, strings.NewReader(data.Encode()))
+	reqURL = reqURL + "?" + data.Encode()
+	r, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, http.NoBody)
 	if err != nil {
 		return nil, err
 	}

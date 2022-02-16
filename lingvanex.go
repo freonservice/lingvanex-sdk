@@ -14,6 +14,7 @@ import (
 const (
 	defaultRetryMax    = 5
 	defaultConnTimeout = 15 * time.Second
+	defaultURL         = "https://api-b2b.backenster.com/b1/api/v3"
 )
 
 type Client interface {
@@ -41,14 +42,11 @@ type client struct {
 	logger     *structlog.Logger
 }
 
-func NewTranslator(apiURL string) Client {
+func NewTranslator() Client {
 	c := &client{
-		apiURL:       apiURL,
-		retryMax:     defaultRetryMax,
-		connTimeout:  defaultConnTimeout,
-		languagesURL: fmt.Sprintf("%s/getLanguages", apiURL),
-		translateURL: fmt.Sprintf("%s/translate", apiURL),
-		logger:       structlog.New(),
+		retryMax:    defaultRetryMax,
+		connTimeout: defaultConnTimeout,
+		logger:      structlog.New(),
 	}
 	c.initClient()
 	return c
@@ -66,6 +64,8 @@ func (c *client) SetConnTimeout(connTimeout time.Duration) Client {
 
 func (c *client) SetURL(apiURL string) Client {
 	c.apiURL = apiURL
+	c.translateURL = fmt.Sprintf("%s/translate", c.apiURL)
+	c.languagesURL = fmt.Sprintf("%s/getLanguages", c.apiURL)
 	return c
 }
 
@@ -102,4 +102,7 @@ func (c *client) initClient() {
 		},
 	}
 	c.httpClient = httpClient
+	c.apiURL = defaultURL
+	c.translateURL = fmt.Sprintf("%s/translate", c.apiURL)
+	c.languagesURL = fmt.Sprintf("%s/getLanguages", c.apiURL)
 }

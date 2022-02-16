@@ -21,7 +21,7 @@ type TranslateRequest struct {
 
 type TranslateResponse struct {
 	Err                   string `json:"err,omitempty"`
-	Result                string `json:"from,omitempty"`
+	Result                string `json:"result,omitempty"`
 	SourceTransliteration string `json:"sourceTransliteration,omitempty"`
 	TargetTransliteration string `json:"targetTransliteration,omitempty"`
 }
